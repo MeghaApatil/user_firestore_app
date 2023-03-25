@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "452462857182",
+    "project_id": "cityapp-7e9c8",
+    "storage_bucket": "cityapp-7e9c8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:452462857182:android:08d02a4eec59ef42622b4f",
+        "android_client_info": {
+          "package_name": "com.example.firestore_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "452462857182-6iv3c7pfm7iaajld9pv1i83nq90doplh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmZZai3qcoyvcR85yop-M_sbWXBkkxLB8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "452462857182-6iv3c7pfm7iaajld9pv1i83nq90doplh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
