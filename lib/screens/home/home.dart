@@ -16,7 +16,7 @@ class Home extends StatefulWidget {
 abstract class HomePageState extends State<Home> {
   @protected
   List<UserData> users = [];
-
+  final formKey = GlobalKey<FormState>();
   TextEditingController fNameValue = TextEditingController();
   TextEditingController lNameValue = TextEditingController();
   TextEditingController emailValue = TextEditingController();
@@ -28,6 +28,27 @@ abstract class HomePageState extends State<Home> {
     getdata();
   }
 
+  @override
+  void dispose() {
+    fNameValue.dispose();
+    lNameValue.dispose();
+    emailValue.dispose();
+    cityValue.dispose();
+    super.dispose();
+  }
+
+void updateData(UserData userData) {
+    if (formKey.currentState!.validate()) {
+      updateUser(userData);
+    }
+  }
+String? validateData(String? val) {
+    if (val==null||val.isEmpty) {
+      return 'can\'t be empty';
+    } else {
+      return null;
+    }
+  }
   final CollectionReference userCollection =
       FirebaseFirestore.instance.collection(Strings.collectionName);
 
@@ -55,7 +76,7 @@ abstract class HomePageState extends State<Home> {
     userCollection.doc(id).delete().then(
       (doc) {
         SnackBarUtil.showSnackbar(Messages.deleteUser, context);
-      Navigator.of(context).popAndPushNamed('/home');
+        Navigator.of(context).popAndPushNamed('/home');
       },
       onError: (e) {
         SnackBarUtil.showSnackbar("Error updating document $e", context);
@@ -63,26 +84,23 @@ abstract class HomePageState extends State<Home> {
     );
   }
 
-   updateUser(UserData users) { 
+  updateUser(UserData users) {
     final CollectionReference userCollection =
-       FirebaseFirestore.instance.collection(Strings.collectionName);
+        FirebaseFirestore.instance.collection(Strings.collectionName);
     UserData userData = UserData(
         id: users.id,
-        fName: fNameValue.text.isEmpty
-                                        ? users.fName
-                                        : fNameValue.text,
-        lName: lNameValue.text.isEmpty?users.lName:lNameValue.text,
-        email: emailValue.text.isEmpty?users.email:emailValue.text,
-        city: cityValue.text.isEmpty?users.city:cityValue.text);
+        fName: fNameValue.text.isEmpty ? users.fName : fNameValue.text,
+        lName: lNameValue.text.isEmpty ? users.lName : lNameValue.text,
+        email: emailValue.text.isEmpty ? users.email : emailValue.text,
+        city: cityValue.text.isEmpty ? users.city : cityValue.text);
 
     userCollection.doc(users.id).update(userData.toFirestore()).then((value) {
       SnackBarUtil.showSnackbar(Messages.updateUser, context);
-                     Navigator.of(context).popAndPushNamed('/home');
+      Navigator.of(context).popAndPushNamed('/home');
     }, onError: (e) {
       SnackBarUtil.showSnackbar('Error on updating user data $e', context);
     });
   }
-
 
   createUser(UserData userData) async {
     final userDoc = userCollection

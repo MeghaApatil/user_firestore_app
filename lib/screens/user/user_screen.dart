@@ -6,17 +6,34 @@ import 'package:firestore_app/utils/snackbarutil.dart';
 import 'package:firestore_app/utils/strings.dart';
 import 'package:flutter/material.dart';
 
-class UserScreen extends StatefulWidget{
-   const UserScreen({super.key});
+class UserScreen extends StatefulWidget {
+  const UserScreen({super.key});
 
   @override
   UserView createState() => UserView();
 }
 
 abstract class UserSCreenState extends State<UserScreen> {
-    final CollectionReference userCollection =
+  final formKey = GlobalKey<FormState>();
+  final CollectionReference userCollection =
       FirebaseFirestore.instance.collection(Strings.collectionName);
-  
+
+  void submit(UserData userData) {
+    if (formKey.currentState!.validate()) {
+      createUser(userData);
+    } else {
+      print('elseee');
+    }
+  }
+
+ String? validateData(String? val) {
+    if (val==null||val.isEmpty) {
+      return 'can\'t be empty';
+    } else {
+      return null;
+    }
+  }
+
   createUser(UserData userData) async {
     final userDoc = userCollection
         .withConverter(
@@ -26,7 +43,7 @@ abstract class UserSCreenState extends State<UserScreen> {
         .doc();
     userData.id = userDoc.id;
     await userDoc.set(userData).then((value) {
-                    Navigator.of(context).popAndPushNamed('/home');
+      Navigator.of(context).popAndPushNamed('/home');
       SnackBarUtil.showSnackbar(Messages.createUser, context);
     }, onError: (e) {
       SnackBarUtil.showSnackbar('Error on creating user data $e', context);

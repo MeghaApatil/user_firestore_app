@@ -1,6 +1,7 @@
 import 'package:firestore_app/models/user_data.dart';
 import 'package:firestore_app/screens/home/home.dart';
 import 'package:firestore_app/utils/strings.dart';
+import 'package:firestore_app/utils/validate_fields.dart';
 import 'package:flutter/material.dart';
 
 class HomeView extends HomePageState {
@@ -12,9 +13,13 @@ class HomeView extends HomePageState {
         automaticallyImplyLeading: false,
         leading: const Icon(Icons.home),
       ),
-      body: Column(
+      body: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        scrollDirection: Axis.vertical,
+        child: Column(
         children: [
           ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
               shrinkWrap: true,
               scrollDirection: Axis.vertical,
               itemCount: users.length,
@@ -26,6 +31,7 @@ class HomeView extends HomePageState {
                     ));
               })
         ],
+      ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -41,13 +47,14 @@ class HomeView extends HomePageState {
     return Column(
       children: [
         ListTile(
+          leading: const Icon(Icons.person_4),
           trailing: SizedBox(
             width: 100,
             child: Row(
               children: [
                 IconButton(
                     onPressed: () {
-                      showBottomUI(userData);
+                      showEditUI(userData);
                       // Navigator.of(context).popAndPushNamed('/userUpdate');
                       // MaterialPageRoute(builder: (context) => UserUpdateView(userData: userData,));
                     },
@@ -83,67 +90,88 @@ class HomeView extends HomePageState {
     );
   }
 
-  Future showBottomUI(UserData userData) {
-    return showModalBottomSheet(
-        context: context,
-        builder: ((context) {
-          return Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextField(
-                  controller: fNameValue,
-                  decoration: InputDecoration(
-                    labelText: userData.fName,
-                  ),
-                ),
-                TextField(
-                  controller: lNameValue,
-                  decoration: InputDecoration(labelText: userData.lName),
-                ),
-                TextField(
-                  controller: emailValue,
-                  decoration: InputDecoration(
-                    labelText: userData.email,
-                  ),
-                ),
-                TextField(
-                  controller: cityValue,
-                  decoration: InputDecoration(
-                    labelText: userData.city,
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+  Future showEditUI(UserData userData) {
+    fNameValue.text = userData.fName!;
+    lNameValue.text = userData.lName!;
+    emailValue.text = userData.email!;
+    cityValue.text = userData.city!;
+
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          scrollable: true,
+          // title: Text(Strings.updateUSer),
+          content: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    OutlinedButton(
-                      onPressed: () {
-                        updateUser(userData);
-                      },
-                      style: ButtonStyle(
-                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0))),
+                    TextFormField(
+                      controller: fNameValue,
+                      validator: validateData,
+                      decoration: InputDecoration(
+                        labelText: Strings.fName,
                       ),
-                      child: Text(Strings.update),
                     ),
-                    OutlinedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        style: ButtonStyle(
-                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0))),
+                    TextFormField(
+                      controller: lNameValue,
+                      validator:validateData,
+                      decoration: InputDecoration(
+                        labelText: Strings.lName,
                       ),
-                        child: Text(Strings.cancel))
+                    ),
+                    TextFormField(
+                      controller: emailValue,
+                      validator: validateData,
+                      decoration: InputDecoration(
+                        labelText: Strings.emailId,
+                      ),
+                    ),
+                    TextFormField(
+                      controller: cityValue,
+                      validator: validateData,
+                      decoration: InputDecoration(
+                        labelText: Strings.city,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            updateData(userData);
+                          },
+                          style: ButtonStyle(
+                            shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0))),
+                          ),
+                          child: Text(Strings.update),
+                        ),
+                        ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            style: ButtonStyle(
+                              shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(10.0))),
+                            ),
+                            child: Text(Strings.cancel))
+                      ],
+                    ),
                   ],
                 ),
-              ],
-            ),
-          );
-        }));
+              )),
+        );
+      },
+    );
   }
 
   Future addUserPopup() {

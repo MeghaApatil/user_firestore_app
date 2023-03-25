@@ -11,6 +11,11 @@ class Strings {
   static String userName ='UserName';
   static String password ='Password';
   static String addUser='Add User';
+  static String updateUSer ='Update user';
+  static String fName='First Name';
+  static String lName='Last Name';
+  static String emailId='Email Id';
+  static String city='City';
 
 
   static String collectionName='users';
