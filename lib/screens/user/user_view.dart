@@ -1,6 +1,5 @@
 import 'package:firestore_app/models/user_data.dart';
 import 'package:firestore_app/screens/user/user_screen.dart';
-import 'package:firestore_app/utils/validate_fields.dart';
 import 'package:flutter/material.dart';
 
 class UserView extends UserSCreenState {

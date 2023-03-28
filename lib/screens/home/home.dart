@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firestore_app/models/user_data.dart';
 import 'package:firestore_app/screens/home/home_view.dart';
+import 'package:firestore_app/screens/home/home_view_model.dart';
 import 'package:firestore_app/utils/messages.dart';
 import 'package:firestore_app/utils/snackbarutil.dart';
 import 'package:firestore_app/utils/strings.dart';
@@ -21,11 +22,12 @@ abstract class HomePageState extends State<Home> {
   TextEditingController lNameValue = TextEditingController();
   TextEditingController emailValue = TextEditingController();
   TextEditingController cityValue = TextEditingController();
+  HomeViewModel homeViewModel = HomeViewModel();
 
   @override
   void initState() {
     super.initState();
-    getdata();
+    getData();
   }
 
   @override
@@ -37,83 +39,59 @@ abstract class HomePageState extends State<Home> {
     super.dispose();
   }
 
-void updateData(UserData userData) {
+  void updateData(UserData userData) {
     if (formKey.currentState!.validate()) {
       updateUser(userData);
     }
   }
-String? validateData(String? val) {
-    if (val==null||val.isEmpty) {
+
+  String? validateData(String? val) {
+    if (val == null || val.isEmpty) {
       return 'can\'t be empty';
     } else {
       return null;
     }
   }
-  final CollectionReference userCollection =
-      FirebaseFirestore.instance.collection(Strings.collectionName);
 
-  Future<List<UserData>> getdata() async {
-    final ref = userCollection.withConverter(
-      fromFirestore: UserData.fromFirestore,
-      toFirestore: (UserData city, _) => city.toFirestore(),
-    );
-    final docSnap = await ref.get();
-    final city = docSnap.docs; // Convert to City object list
-    if (city != null) {
-      city.forEach((element) async {
-        setState(() {
-          users.add(element.data());
-        });
+  Future<void>getData() async {
+    homeViewModel.getdata((List<UserData> usersList) {
+      setState(() {
+        users = usersList;
       });
-    } else {
-      // FToast().showToast(Messages.listEmpty);
-      SnackBarUtil.showSnackbar(Messages.listEmpty, context);
-    }
-    return users;
+    }, (error) {
+      SnackBarUtil.showErrorSnackbar(context, error, Colors.red);
+    });
   }
 
-  deleteUser(String id) {
-    userCollection.doc(id).delete().then(
-      (doc) {
-        SnackBarUtil.showSnackbar(Messages.deleteUser, context);
-        Navigator.of(context).popAndPushNamed('/home');
-      },
-      onError: (e) {
-        SnackBarUtil.showSnackbar("Error updating document $e", context);
-      },
-    );
+  deleteUserById(String id) {
+    homeViewModel.deleteUser(id, (success) {
+      SnackBarUtil.showSnackbar(success, context);
+      Navigator.of(context).popAndPushNamed('/home');
+    }, (error) {
+      SnackBarUtil.showSnackbar("Error updating document $error", context);
+    });
+  }
+
+  createUser(UserData userData) {
+    homeViewModel.createUser(userData, (success) {
+      SnackBarUtil.showSnackbar(success, context);
+    }, (error) {
+      SnackBarUtil.showSnackbar('Error on creating user data $error', context);
+    });
   }
 
   updateUser(UserData users) {
-    final CollectionReference userCollection =
-        FirebaseFirestore.instance.collection(Strings.collectionName);
     UserData userData = UserData(
         id: users.id,
         fName: fNameValue.text.isEmpty ? users.fName : fNameValue.text,
         lName: lNameValue.text.isEmpty ? users.lName : lNameValue.text,
         email: emailValue.text.isEmpty ? users.email : emailValue.text,
         city: cityValue.text.isEmpty ? users.city : cityValue.text);
-
-    userCollection.doc(users.id).update(userData.toFirestore()).then((value) {
-      SnackBarUtil.showSnackbar(Messages.updateUser, context);
+    homeViewModel.updateUser(userData, users.id, (success) {
+      SnackBarUtil.showSnackbar(success, context);
       Navigator.of(context).popAndPushNamed('/home');
-    }, onError: (e) {
-      SnackBarUtil.showSnackbar('Error on updating user data $e', context);
-    });
-  }
-
-  createUser(UserData userData) async {
-    final userDoc = userCollection
-        .withConverter(
-          fromFirestore: UserData.fromFirestore,
-          toFirestore: (UserData userData, options) => userData.toFirestore(),
-        )
-        .doc();
-    userData.id = userDoc.id;
-    await userDoc.set(userData).then((value) {
-      SnackBarUtil.showSnackbar(Messages.createUser, context);
-    }, onError: (e) {
-      SnackBarUtil.showSnackbar('Error on creating user data $e', context);
+    }, (error) {
+      SnackBarUtil.showSnackbar('Error on updating user data $error', context);
     });
   }
 }

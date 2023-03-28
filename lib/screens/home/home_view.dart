@@ -13,25 +13,26 @@ class HomeView extends HomePageState {
         automaticallyImplyLeading: false,
         leading: const Icon(Icons.home),
       ),
-      body: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        scrollDirection: Axis.vertical,
-        child: Column(
-        children: [
-          ListView.builder(
-            physics: const AlwaysScrollableScrollPhysics(),
-              shrinkWrap: true,
-              scrollDirection: Axis.vertical,
-              itemCount: users.length,
-              itemBuilder: (context, index) {
-                return Card(
+      body: RefreshIndicator(
+        onRefresh: getData,
+        child: users.isEmpty
+            ? const Center(
+                child: Text('Empty list'),
+              )
+            : ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                shrinkWrap: true,
+                scrollDirection: Axis.vertical,
+                itemCount: users.length,
+                itemBuilder: (context, index) {
+                  return Card(
                     margin: const EdgeInsets.all(5),
                     child: listItem(
                       users[index],
-                    ));
-              })
-        ],
-      ),
+                    ),
+                  );
+                },
+              ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -119,7 +120,7 @@ class HomeView extends HomePageState {
                     ),
                     TextFormField(
                       controller: lNameValue,
-                      validator:validateData,
+                      validator: validateData,
                       decoration: InputDecoration(
                         labelText: Strings.lName,
                       ),
@@ -256,7 +257,7 @@ class HomeView extends HomePageState {
                   child: Text(Strings.delete),
                   onPressed: () {
                     setState(() {
-                      deleteUser(userData.id);
+                      deleteUserById(userData.id);
                       Navigator.of(context).pop();
                     });
                   }),

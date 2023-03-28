@@ -1,9 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firestore_app/models/user_data.dart';
 import 'package:firestore_app/screens/user/user_view.dart';
-import 'package:firestore_app/utils/messages.dart';
+import 'package:firestore_app/screens/user/user_view_model.dart';
 import 'package:firestore_app/utils/snackbarutil.dart';
-import 'package:firestore_app/utils/strings.dart';
 import 'package:flutter/material.dart';
 
 class UserScreen extends StatefulWidget {
@@ -15,8 +14,7 @@ class UserScreen extends StatefulWidget {
 
 abstract class UserSCreenState extends State<UserScreen> {
   final formKey = GlobalKey<FormState>();
-  final CollectionReference userCollection =
-      FirebaseFirestore.instance.collection(Strings.collectionName);
+  UserViewModel userViewModel = UserViewModel();
 
   void submit(UserData userData) {
     if (formKey.currentState!.validate()) {
@@ -33,20 +31,11 @@ abstract class UserSCreenState extends State<UserScreen> {
       return null;
     }
   }
-
-  createUser(UserData userData) async {
-    final userDoc = userCollection
-        .withConverter(
-          fromFirestore: UserData.fromFirestore,
-          toFirestore: (UserData userData, options) => userData.toFirestore(),
-        )
-        .doc();
-    userData.id = userDoc.id;
-    await userDoc.set(userData).then((value) {
-      Navigator.of(context).popAndPushNamed('/home');
-      SnackBarUtil.showSnackbar(Messages.createUser, context);
-    }, onError: (e) {
-      SnackBarUtil.showSnackbar('Error on creating user data $e', context);
+createUser(UserData userData) {
+    userViewModel.createUser(userData, (success) {
+      SnackBarUtil.showSnackbar(success, context);
+    }, (error) {
+      SnackBarUtil.showSnackbar('Error on creating user data $error', context);
     });
   }
 }
