@@ -42,17 +42,6 @@ class HomeViewModel {
     });
   }
 
-  updateUser(
-      UserData userData, String id, Function completion, Function error) {
-    final CollectionReference userCollection =
-        FirebaseFirestore.instance.collection(Strings.collectionName);
-
-    userCollection.doc(id).update(userData.toFirestore()).then((value) {
-      completion(Messages.updateUser);
-    }, onError: (e) {
-      error(e);
-    });
-  }
 
   deleteUser(String id, Function completion, Function error) {
     userCollection.doc(id).delete().then(

@@ -1,82 +1,77 @@
-import 'package:firestore_app/models/user_data.dart';
 import 'package:firestore_app/screens/user/user_screen.dart';
+import 'package:firestore_app/utils/strings.dart';
 import 'package:flutter/material.dart';
 
 class UserView extends UserSCreenState {
   @override
   Widget build(BuildContext context) {
-    TextEditingController fNameValue = TextEditingController();
-    TextEditingController lNameValue = TextEditingController();
-    TextEditingController emailValue = TextEditingController();
-    TextEditingController cityValue = TextEditingController();
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add user data'),
+        title: Text(Strings.addUser),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child:  Form(
-            key: formKey,
-            child:SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          physics: const NeverScrollableScrollPhysics(),
-              child:  Column(
+        padding: const EdgeInsets.all(15.0),
+        child: Form(
+          key: formKey,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            physics: const NeverScrollableScrollPhysics(),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(5),
                   child: TextFormField(
-                    controller: fNameValue,
+                    controller: fNameController,
                     validator: validateData,
-                    decoration: const InputDecoration(
-                        labelText: 'First Name', border: OutlineInputBorder()),
+                    decoration: InputDecoration(
+                      labelText: Strings.fName,
+                    ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(5),
                   child: TextFormField(
-                    controller: lNameValue,
+                    controller: lNameController,
                     validator: validateData,
-                    decoration: const InputDecoration(
-                        labelText: 'Last Name', border: OutlineInputBorder()),
+                    decoration: InputDecoration(
+                      labelText: Strings.lName,
+                    ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(5),
                   child: TextFormField(
-                    controller: emailValue,
+                    controller: emailController,
                     validator: validateData,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                        labelText: 'Email Id', border: OutlineInputBorder()),
+                    decoration: InputDecoration(
+                      labelText: Strings.emailId,
+                    ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(5),
                   child: TextFormField(
-                    controller: cityValue,
+                    controller: cityController,
                     validator: validateData,
-                    decoration: const InputDecoration(
-                        labelText: 'City', border: OutlineInputBorder()),
+                    decoration: InputDecoration(
+                      labelText: Strings.city,
+                    ),
                   ),
                 ),
                 ElevatedButton(
-                  child: const Text("Submit"),
+                  child: Text(isEdit ? Strings.update : Strings.submit),
                   onPressed: () {
-                    UserData userData = UserData(
-                        id: '',
-                        fName: fNameValue.text,
-                        lName: lNameValue.text,
-                        email: emailValue.text,
-                        city: cityValue.text);
-                    submit(userData);
+                    checkEditUpdateValidation();
                   },
                 )
               ],
-            ),),
+            ),
           ),
         ),
-      
+      ),
     );
   }
 }

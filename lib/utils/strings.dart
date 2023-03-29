@@ -7,6 +7,7 @@ class Strings {
   static String update = 'Update';
   static String cancel= 'Cancel';
   static String delete ='Delete';
+  static String edit='Edit';
   static String delteUser='Delete user';
   static String userName ='UserName';
   static String password ='Password';

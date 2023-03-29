@@ -21,4 +21,17 @@ class UserViewModel {
       error(e);
     });
   }
+
+  
+  updateUser(
+      UserData userData, String id, Function completion, Function error) {
+    final CollectionReference userCollection =
+        FirebaseFirestore.instance.collection(Strings.collectionName);
+print('upate');
+    userCollection.doc(id).update(userData.toFirestore()).then((value) {
+      completion(Messages.updateUser);
+    }, onError: (e) {
+      error(e);
+    });
+  }
 }
